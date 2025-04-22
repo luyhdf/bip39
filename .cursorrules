@@ -1,0 +1,6 @@
+本项目从https://github.com/iancoleman/bip39克隆而来
+并修改添加助记词加密及导出保存文件功能
+
+src/index.html 是原主页面
+src/js 是原js文件,很多功能要参考src的实现
+index.html 是修改后的主页面

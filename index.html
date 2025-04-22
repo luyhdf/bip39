@@ -4,95 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BIP39 Demo 页面</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        .container {
-            text-align: center;
-            margin-top: 50px;
-        }
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #f1f1f1;
-            border: none;
-            border-radius: 5px 5px 0 0;
-            margin: 0 5px;
-        }
-        .tab.active {
-            background-color: #007bff;
-            color: white;
-        }
-        .tab-content {
-            display: none;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 0 0 5px 5px;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            min-width: 120px;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-        .input-group {
-            margin: 20px 0;
-        }
-        .word-count {
-            margin: 10px 0;
-        }
-        .output-container {
-            display: flex;
-            margin: 20px 0;
-            align-items: flex-start;
-        }
-        .output-text {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            min-height: 100px;
-            resize: vertical;
-        }
-        .btn-copy {
-            margin-left: 10px;
-            height: 40px;
-            align-self: flex-start;
-        }
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: center;
-        }
-    </style>
+    <link rel="stylesheet" href="src1/styles.css">
 </head>
 <body>
     <div class="container">
@@ -122,7 +34,17 @@
             </div>
 
             <div class="output-container">
-                <textarea id="mnemonicOutput" class="output-text" readonly></textarea>
+                <textarea id="mnemonicOutput" class="output-text"></textarea>
+                <div class="hint">
+                    <div class="hint-item">
+                        <span class="hint-key">Tab</span>
+                        <span>切换候选词</span>
+                    </div>
+                    <div class="hint-item">
+                        <span class="hint-key">Enter</span>
+                        <span>确认输入</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -137,53 +59,6 @@
     <script src="src/js/sjcl-bip39.js"></script>
     <script src="src/js/wordlist_english.js"></script>
     <script src="src/js/jsbip39.js"></script>
-    <script>
-        function openTab(tabName) {
-            var tabContents = document.getElementsByClassName("tab-content");
-            for (var i = 0; i < tabContents.length; i++) {
-                tabContents[i].classList.remove("active");
-            }
-
-            var tabs = document.getElementsByClassName("tab");
-            for (var i = 0; i < tabs.length; i++) {
-                tabs[i].classList.remove("active");
-            }
-
-            document.getElementById(tabName).classList.add("active");
-            event.currentTarget.classList.add("active");
-        }
-
-        function generateMnemonic() {
-            const wordCount = document.querySelector('input[name="wordCount"]:checked').value;
-            const strength = wordCount === "12" ? 128 : 256; // 12词对应128位熵，24词对应256位熵
-            
-            try {
-                // 创建一个临时的 DOM 元素来满足 Mnemonic 类的初始化要求
-                const tempContainer = document.createElement('div');
-                tempContainer.className = 'entropy-container';
-                tempContainer.innerHTML = '<input class="pbkdf2-rounds" value="2048">';
-                document.body.appendChild(tempContainer);
-
-                const mnemonic = new Mnemonic("english");
-                const words = mnemonic.generate(strength);
-                document.getElementById("mnemonicOutput").value = words;
-
-                // 清理临时元素
-                document.body.removeChild(tempContainer);
-            } catch (error) {
-                alert("生成助记词时出错: " + error.message);
-            }
-        }
-
-        async function pasteFromClipboard() {
-            try {
-                const text = await navigator.clipboard.readText();
-                document.getElementById("mnemonicOutput").value = text;
-            } catch (err) {
-                alert("无法访问剪贴板，请确保已授予剪贴板访问权限");
-                console.error("粘贴失败:", err);
-            }
-        }
-    </script>
+    <script src="src1/script.js"></script>
 </body>
 </html>
