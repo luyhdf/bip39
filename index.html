@@ -16,6 +16,32 @@
             text-align: center;
             margin-top: 50px;
         }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            margin: 0 5px;
+        }
+        .tab.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 0 0 5px 5px;
+        }
+        .tab-content.active {
+            display: block;
+        }
         .btn {
             display: inline-block;
             padding: 10px 20px;
@@ -23,18 +49,141 @@
             color: white;
             text-decoration: none;
             border-radius: 5px;
-            margin-top: 20px;
+            border: none;
+            cursor: pointer;
+            min-width: 120px;
         }
         .btn:hover {
             background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        .word-count {
+            margin: 10px 0;
+        }
+        .output-container {
+            display: flex;
+            margin: 20px 0;
+            align-items: flex-start;
+        }
+        .output-text {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 100px;
+            resize: vertical;
+        }
+        .btn-copy {
+            margin-left: 10px;
+            height: 40px;
+            align-self: flex-start;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>欢迎使用 BIP39 Demo</h1>
-        <p>这是一个简单的演示页面，点击下面的按钮可以跳转到主应用页面。</p>
-        <a href="src/index.html" class="btn">进入主应用</a>
+        <h1>助记词生成器</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('bip39')">BIP39助记词</button>
+            <button class="tab" onclick="openTab('slip39')">SLIP39助记词</button>
+        </div>
+
+        <div id="bip39" class="tab-content active">
+            <h2>BIP39 助记词</h2>
+            <p>BIP39 是一种用于生成确定性钱包的助记词标准。</p>
+            
+            <div class="word-count">
+                <label>
+                    <input type="radio" name="wordCount" value="12" checked> 12个单词
+                </label>
+                <label style="margin-left: 20px;">
+                    <input type="radio" name="wordCount" value="24"> 24个单词
+                </label>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" onclick="generateMnemonic()">生成助记词</button>
+                <button class="btn btn-secondary" onclick="pasteFromClipboard()">从剪贴板粘贴</button>
+            </div>
+
+            <div class="output-container">
+                <textarea id="mnemonicOutput" class="output-text" readonly></textarea>
+            </div>
+        </div>
+
+        <div id="slip39" class="tab-content">
+            <h2>SLIP39 助记词</h2>
+            <p>SLIP39 是一种用于生成共享秘密的助记词标准。</p>
+            <a href="src/index.html" class="btn">进入 SLIP39 应用</a>
+        </div>
     </div>
+
+    <script src="src/js/jquery-3.2.1.js"></script>
+    <script src="src/js/sjcl-bip39.js"></script>
+    <script src="src/js/wordlist_english.js"></script>
+    <script src="src/js/jsbip39.js"></script>
+    <script>
+        function openTab(tabName) {
+            var tabContents = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+
+            var tabs = document.getElementsByClassName("tab");
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+
+            document.getElementById(tabName).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+
+        function generateMnemonic() {
+            const wordCount = document.querySelector('input[name="wordCount"]:checked').value;
+            const strength = wordCount === "12" ? 128 : 256; // 12词对应128位熵，24词对应256位熵
+            
+            try {
+                // 创建一个临时的 DOM 元素来满足 Mnemonic 类的初始化要求
+                const tempContainer = document.createElement('div');
+                tempContainer.className = 'entropy-container';
+                tempContainer.innerHTML = '<input class="pbkdf2-rounds" value="2048">';
+                document.body.appendChild(tempContainer);
+
+                const mnemonic = new Mnemonic("english");
+                const words = mnemonic.generate(strength);
+                document.getElementById("mnemonicOutput").value = words;
+
+                // 清理临时元素
+                document.body.removeChild(tempContainer);
+            } catch (error) {
+                alert("生成助记词时出错: " + error.message);
+            }
+        }
+
+        async function pasteFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById("mnemonicOutput").value = text;
+            } catch (err) {
+                alert("无法访问剪贴板，请确保已授予剪贴板访问权限");
+                console.error("粘贴失败:", err);
+            }
+        }
+    </script>
 </body>
 </html>
