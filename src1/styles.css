@@ -166,4 +166,23 @@ body {
     border: 1px solid #f5c6cb;
     border-radius: 4px;
     margin: 5px;
+}
+
+.success-message {
+    color: #28a745;
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    margin: 5px;
+}
+
+.status-message {
+    margin-top: 10px;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    width: 100%;
+    text-align: center;
 } 

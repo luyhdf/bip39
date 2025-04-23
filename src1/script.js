@@ -180,6 +180,34 @@ function initWordSuggestions() {
     textarea.addEventListener("input", function(e) {
         const currentWord = this.value.split(" ").pop().toLowerCase();
         updateSuggestions(currentWord);
+        
+        // 检查助记词是否完整
+        const words = this.value.trim().split(/\s+/);
+        const wordCount = document.querySelector('input[name="wordCount"]:checked').value;
+        
+        const statusDiv = document.getElementById('mnemonicStatus');
+        
+        if (words.length === parseInt(wordCount)) {
+            // 检查助记词是否有效
+            try {
+                const mnemonic = new Mnemonic("english");
+                const isValid = mnemonic.check(words.join(" "));
+                
+                if (isValid) {
+                    statusDiv.className = 'status-message success-message';
+                    statusDiv.textContent = '助记词有效';
+                } else {
+                    statusDiv.className = 'status-message error-message';
+                    statusDiv.textContent = '助记词无效';
+                }
+            } catch (error) {
+                statusDiv.className = 'status-message error-message';
+                statusDiv.textContent = '助记词无效';
+            }
+        } else {
+            statusDiv.className = 'status-message';
+            statusDiv.textContent = `已输入 ${words.length} 个单词，还需要 ${parseInt(wordCount) - words.length} 个单词`;
+        }
     });
 
     textarea.addEventListener("click", function() {
